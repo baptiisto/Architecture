@@ -6,10 +6,11 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime
 import sqlite3
+from sqlalchemy import create_engine, MetaData, Table, Column, String, Uuid, Boolean, DateTime
 
 TODO_FOLDER = "db"
 BASE_DE_DONNEES ="toudou.db"
-
+NOM_TABLE = "TODOS"
 
 @dataclass
 class Todo:
@@ -20,16 +21,22 @@ class Todo:
 
 
 def init_connexion() -> None:
-    con = sqlite3.connect(os.path.join(TODO_FOLDER,BASE_DE_DONNEES))
-    return con
+    engine = create_engine("sqlite:///db/todos.db", echo=True)
+    return engine
 
 def init_db():
     os.makedirs(TODO_FOLDER, exist_ok=True)
-    con = init_connexion()
-    cur = con.cursor()
-    cur.execute(
-        f"Create TABLE  If not exists TODOS(ID TEXT PRIMARY KEY NOT NULL,TASK TEXT NOT NULL, COMPLETED BOOLEAN NOT NULL,DATE TEXT)")
-    con.close()
+    engine = init_connexion()
+    metadata_obj = MetaData()
+    todosTable= Table(
+    NOM_TABLE,
+    metadata_obj,
+        Column("id", Uuid, primary_key=True, default=uuid.uuid4),
+        Column("task", String, nullable=False),
+        Column("complete", Boolean, nullable=False),
+        Column("due", DateTime, nullable=True))
+    metadata_obj.create_all(engine)
+
 
 def create_todo(
     task: str,
