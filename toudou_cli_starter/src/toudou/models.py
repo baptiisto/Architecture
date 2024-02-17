@@ -35,7 +35,14 @@ def init_db():
         Column("task", String, nullable=False),
         Column("complete", Boolean, nullable=False),
         Column("due", DateTime, nullable=True))
-    metadata_obj.create_all(engine)
+
+    metadata_obj.reflect(bind=engine)
+    table_existante = metadata_obj.tables.keys()
+
+    if NOM_TABLE not in table_existante:
+        metadata_obj.create_all(engine)
+    else:
+        print("La table existe déjà")
 
 
 def create_todo(
