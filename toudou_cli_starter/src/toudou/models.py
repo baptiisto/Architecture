@@ -68,15 +68,12 @@ def get_todo(id: uuid.UUID) -> Todo:
 
 def get_all_todos() -> list[Todo]:
     tab_todos = []
-    con = init_connexion()
-    cur = con.cursor()
-    try:
-        cur.execute(f"SELECT * FROM TODOS")
-    except sqlite3.Error as e:
-        print(f"Erreur:{e}")
-    result = cur.fetchall()
-    con.close()
-    for row in result:
+    engine, metadata_obj, todosTable = init_connexion()
+    stmt = select(todosTable)
+    with engine.connect() as conn:
+        result = conn.execute(stmt)
+        rows = result.fetchall()
+    for row in rows:
         todo = creer_todo(row)
         if todo:
             tab_todos.append(todo)
