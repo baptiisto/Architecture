@@ -11,19 +11,8 @@ from sqlalchemy import create_engine, MetaData, Table, Column, String, Uuid, Boo
 TODO_FOLDER = "db"
 BASE_DE_DONNEES ="toudou.db"
 NOM_TABLE = "TODOS"
-entier = 1
 
-engine = create_engine(f"sqlite:///{TODO_FOLDER}/{BASE_DE_DONNEES}", echo=True)
-metadata_obj = MetaData()
 
-todosTable = Table(
-    NOM_TABLE,
-    metadata_obj,
-    Column("id", String, primary_key=True, default=str(uuid.uuid4())),
-    Column("task", String, nullable=False),
-    Column("complete", Boolean, nullable=False),
-    Column("due", DateTime, nullable=True)
-)
 @dataclass
 class Todo:
     id: uuid.UUID
@@ -31,23 +20,35 @@ class Todo:
     complete: bool
     due: datetime | None
 
+def init_connexion() -> None:
+    engine = create_engine(f"sqlite:///{TODO_FOLDER}/{BASE_DE_DONNEES}", echo=True)
+    metadata_obj = MetaData()
 
+    todosTable = Table(
+        NOM_TABLE,
+        metadata_obj,
+        Column("id", String, primary_key=True, default=str(uuid.uuid4())),
+        Column("task", String, nullable=False),
+        Column("complete", Boolean, nullable=False),
+        Column("due", DateTime, nullable=True)
+    )
+    return engine,metadata_obj,todosTable
 def init_db():
     global entier
+    engine, metadata_obj, todosTable = init_connexion()
     os.makedirs(TODO_FOLDER, exist_ok=True)
     table_existante = metadata_obj.tables.get(NOM_TABLE)
     if table_existante is None:
         metadata_obj.create_all(engine)
     else:
         print("La table existe déjà")
-    entier += 1
-    print(entier)
 
 def create_todo(
     task: str,
     complete: bool = False,
     due: datetime | None = None
 ) -> None:
+    engine, metadata_obj, todosTable = init_connexion()
     stmt = todosTable.insert().values(
         task=task,
         complete=complete,
