@@ -6,7 +6,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime
 import sqlite3
-from sqlalchemy import create_engine, MetaData, Table, Column, String, Uuid, Boolean, DateTime
+from sqlalchemy import create_engine, MetaData, Table, Column, String, Uuid, Boolean, DateTime , select
 
 TODO_FOLDER = "db"
 BASE_DE_DONNEES ="toudou.db"
@@ -27,21 +27,20 @@ def init_connexion() -> None:
     todosTable = Table(
         NOM_TABLE,
         metadata_obj,
-        Column("id", String, primary_key=True, default=str(uuid.uuid4())),
+        Column("id", Uuid, primary_key=True, default=uuid.uuid4()),
         Column("task", String, nullable=False),
         Column("complete", Boolean, nullable=False),
         Column("due", DateTime, nullable=True)
     )
     return engine,metadata_obj,todosTable
 def init_db():
-    global entier
     engine, metadata_obj, todosTable = init_connexion()
     os.makedirs(TODO_FOLDER, exist_ok=True)
-    table_existante = metadata_obj.tables.get(NOM_TABLE)
-    if table_existante is None:
-        metadata_obj.create_all(engine)
-    else:
-        print("La table existe déjà")
+
+    #if table_existante is None:
+    metadata_obj.create_all(engine)
+    #else:
+        #print("La table existe déjà")
 
 def create_todo(
     task: str,
@@ -58,15 +57,13 @@ def create_todo(
         result = conn.execute(stmt)
 
 def get_todo(id: uuid.UUID) -> Todo:
-    con = init_connexion()
-    cur = con.cursor()
-    try:
-        cur.execute(f"SELECT * FROM TODOS WHERE id ='{id}'")
-    except sqlite3.Error as e:
-        print(f"Erreur:{e}")
-    result = cur.fetchone()
-    con.close()
-    todo = creer_todo(result)
+    engine, metadata_obj, todosTable = init_connexion()
+    stmt = select(todosTable).where(todosTable.c.id == id)
+    with engine.connect() as conn:
+        result = conn.execute(stmt)
+        row = result.fetchone()
+
+    todo = creer_todo(row)
     return todo
 
 def get_all_todos() -> list[Todo]:
