@@ -110,7 +110,5 @@ def creer_todo(result: tuple) -> Todo :
         return todo
     else:
         print("Id inconnu")
-def commit_and_close_connection(con :sqlite3.Connection):
-    con.commit()
-    con.close()
+
 
