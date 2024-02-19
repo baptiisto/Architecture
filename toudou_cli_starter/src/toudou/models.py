@@ -6,7 +6,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime
 import sqlite3
-from sqlalchemy import create_engine, MetaData, Table, Column, String, Uuid, Boolean, DateTime, select, update
+from sqlalchemy import create_engine, MetaData, Table, Column, String, Uuid, Boolean, DateTime, select, update, delete
 
 TODO_FOLDER = "db"
 BASE_DE_DONNEES ="toudou.db"
@@ -93,14 +93,12 @@ def update_todo(
             smt = update(todosTable).where(todosTable.c.id == id).values(task=task, complete=complete, due=due)
         with engine.begin() as conn:
             result = conn.execute(smt)
+
 def delete_todo(id: uuid.UUID) -> None:
-    con = init_connexion()
-    cur = con.cursor()
-    try:
-        cur.execute(f"DELETE FROM TODOS WHERE id ='{id}'")
-    except sqlite3.Error as e:
-        print(f"Erreur:{e}")
-    commit_and_close_connection(con)
+    engine, metadata_obj, todosTable = init_connexion()
+    smt = delete(todosTable).where(todosTable.c.id == id)
+    with engine.begin() as conn:
+        result = conn.execute(smt)
 def creer_todo(result: tuple) -> Todo :
     if result:
         id = result[0]
