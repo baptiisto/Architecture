@@ -5,7 +5,7 @@ import uuid
 
 from dataclasses import dataclass
 from datetime import datetime
-import sqlite3
+
 from sqlalchemy import create_engine, MetaData, Table, Column, String, Uuid, Boolean, DateTime, select, update, delete
 
 TODO_FOLDER = "db"
