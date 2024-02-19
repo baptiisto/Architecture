@@ -6,7 +6,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime
 import sqlite3
-from sqlalchemy import create_engine, MetaData, Table, Column, String, Uuid, Boolean, DateTime , select
+from sqlalchemy import create_engine, MetaData, Table, Column, String, Uuid, Boolean, DateTime, select, update
 
 TODO_FOLDER = "db"
 BASE_DE_DONNEES ="toudou.db"
@@ -86,20 +86,13 @@ def update_todo(
     due: datetime | None
 ) -> None:
     if get_todo(id):
-        con = init_connexion()
-        cur = con.cursor()
+        engine, metadata_obj, todosTable = init_connexion()
         if due:
-            try:
-                cur.execute(f"UPDATE TODOS SET task= '{task}', completed='{complete}',date='{due}'WHERE id = '{id}' ")
-            except sqlite3.Error as e:
-                print(f"Erreur:{e}")
+            smt = update(todosTable).where(todosTable.c.id == id).values(task=task,complete =complete, due=due)
         else:
-            try:
-                cur.execute(f"UPDATE TODOS SET task= '{task}', completed='{complete}' WHERE id = '{id}' ")
-            except sqlite3.Error as e:
-                print(f"Erreur:{e}")
-        commit_and_close_connection(con)
-
+            smt = update(todosTable).where(todosTable.c.id == id).values(task=task, complete=complete, due=due)
+        with engine.begin() as conn:
+            result = conn.execute(smt)
 def delete_todo(id: uuid.UUID) -> None:
     con = init_connexion()
     cur = con.cursor()
@@ -114,9 +107,6 @@ def creer_todo(result: tuple) -> Todo :
         task = result[1]
         completed = result[2]
         date = result[3]
-
-        if date:
-            date = datetime.strptime(date, "%Y-%m-%d")
 
         todo = Todo(id,task,completed,date)
         return todo
