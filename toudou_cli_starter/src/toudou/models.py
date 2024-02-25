@@ -20,7 +20,7 @@ class Todo:
     complete: bool
     due: datetime | None
 
-def init_connexion() -> None:
+def init_connexion() -> tuple:
     engine = create_engine(f"sqlite:///{TODO_FOLDER}/{BASE_DE_DONNEES}", echo=True)
     metadata_obj = MetaData()
 
