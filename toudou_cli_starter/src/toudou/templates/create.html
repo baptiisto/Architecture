@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Creation </title>
+</head>
+<body>
+<h1>Creation d'une Toudou</h1>
+<form action="{{url_for('create')}}" method="POST">
+  <label for="tache"> Tâche de la Todo:</label>
+  <input type="text" id="tache" name="tache"  required>
+  <br>
+   <p>Achievement de la tache
+     <br>
+     <br>
+    <label>True</label>
+    <input type="radio"name="complete" value="True"id="True">
+    <br>
+     <br>
+    <label>False</label>
+    <input type="radio"name="complete" value="False"id="False" checked>
+   </p>
+   <label for="date"> Date de la Todo:</label>
+  <input type="date" id="date" name="date">
+  <br>
+  <br>
+  <input type="submit" value="Envoyer le formulaire">
+</form>
+</body>
+</html>
