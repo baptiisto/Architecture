@@ -1,4 +1,7 @@
 from flask import Flask, render_template, request
+from toudou.models import create_todo
+from datetime import datetime
+
 
 app = Flask(__name__)
 
@@ -9,7 +12,14 @@ def hello(name=None):
 def create():
     donnees = request.form
     tache = donnees['tache']
-    complete = donnees['complete']
+    complete = bool(donnees['complete'])
+    date = donnees['date']
+    if date !="":
+        date = datetime.strptime(date, "%Y-%m-%d")
+    else:
+        date = None
+    create_todo(tache,complete,date)
+
     print(donnees)
     return "Creation du Toudou"
 
