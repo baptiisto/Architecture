@@ -26,5 +26,13 @@
   <br>
   <input type="submit" value="Envoyer le formulaire">
 </form>
+{% if requete == "POST" %}
+    {% if error %}
+    <!-- Rajouter la couleur rouge à cette balise p -->
+        <p> {{ error }} </p>
+    {%else%}
+        <p> Votre toudou a bien été crée</p>
+    {% endif %}
+{% endif %}
 </body>
 </html>
