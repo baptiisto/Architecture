@@ -20,7 +20,6 @@ def create():
         date = None
     create_todo(tache,complete,date)
 
-    print(donnees)
     return "Creation du Toudou"
 
 if __name__ == "__main__":

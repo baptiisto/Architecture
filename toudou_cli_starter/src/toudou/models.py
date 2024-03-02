@@ -10,7 +10,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, String, Uuid, Boo
 from sqlalchemy.exc import OperationalError
 
 TODO_FOLDER = "db"
-BASE_DE_DONNEES ="toudous.db"
+BASE_DE_DONNEES ="toudou.db"
 NOM_TABLE = "TODOS"
 STR_OPERATIONAL_ERROR = "Table Todos Inconnu"
 
@@ -78,6 +78,7 @@ def create_todo(
             result = conn.execute(stmt)
     except OperationalError:
         print(STR_OPERATIONAL_ERROR)
+        return STR_OPERATIONAL_ERROR
 
 
 def get_todo(id: uuid.UUID) -> Todo | str:
