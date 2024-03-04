@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Tes Toudous</title>
+</head>
+<body>
+  {% if not error %}
+    {% if listTodos != [] %}
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Tache</th>
+    <th>Achèvement</th>
+    <th>Date</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for todo in listTodos %}
+  <tr>
+    <td>{{todo.id}}</td>
+    <td>{{todo.task}}</td>
+    {% if todo.complete == True %}
+    <td>Terminé</td>
+    {%else %}
+    <td>En Cours</td>
+    {% endif %}
+    <td>{{todo.due}}</td>
+  </tr>
+  {%endfor %}
+  </tbody>
+</table>
+    {%else%}
+   <p> Aucun Todo a été crée</p>
+    {% endif %}
+  {%else%}
+   <p> {{ error }} </p>
+  {% endif %}
+</body>
+</html>
