@@ -1,5 +1,7 @@
+import uuid
+
 from flask import Flask, render_template, request
-from toudou.models import create_todo, get_all_todos
+from toudou.models import create_todo, get_all_todos ,delete_todo
 from datetime import datetime
 
 
@@ -31,11 +33,25 @@ def afficher_todos():
     listTodos = get_all_todos()
     if type(listTodos) == str:
         error = listTodos
-        print(1)
         return render_template("todos.html", error=error,listTodos=[])
     else:
-        print(2)
         return render_template("todos.html", error=None, listTodos=listTodos)
+
+@app.route("/delete",  methods=["GET", "POST"])
+def delete_todos():
+    listTodos = get_all_todos()
+    if type(listTodos) == str:
+        error = listTodos
+        return render_template("delete.html", error=error,listTodos=[],requete="GET")
+    requete = request.method
+    if requete == "POST":
+        donnees = request.form
+        id =donnees["toudouId"]
+        id = uuid.UUID(id)
+        delete_todo(id)
+        listTodos = get_all_todos()
+        return render_template("delete.html", error=None, listTodos=listTodos, requete="POST")
+    return render_template("delete.html", error=None, listTodos=listTodos, requete="GET")
 
 
 
