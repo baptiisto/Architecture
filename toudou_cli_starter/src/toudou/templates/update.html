@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<h1>Modification d'une Toudou</h1>
+<form action="{{url_for('update')}}" method="POST">
+    {% if not errorList%}
+        {% if listTodos != [] %}
+            <label for="toudouId">Choisissez une Toudou :</label><br>
+            <select id="toudouId" name="toudouId">
+                {% for todo in listTodos %}
+                <option value={{todo.id}}>{{todo.task}}</option>
+                {% endfor %}
+            </select>
+        <br>
+        <label for="tache"> Tâche de la Todo:</label>
+        <input type="text" id="tache" name="tache" >
+        <br>
+        <p>Achievement de la tache
+                <br>
+                <br>
+                <label>True</label>
+                <input type="radio"name="complete" value="True"id="True">
+                <br>
+                <br>
+                <label>False</label>
+                <input type="radio"name="complete" value="False"id="False" checked>
+        </p>
+        <label for="date"> Date de la Todo:</label>
+        <input type="date" id="date" name="date">
+        <br>
+        <br>
+        <input type="submit" value="Envoyer le formulaire">
+        {% else %}
+            <p>Aucune Toudou ne peut étre modfifié crée</p>
+        {% endif %}
+    {% else %}
+        <p>{{ errorList }}</p>
+    {%endif %}
+</form>
+{% if requete == "POST" %}
+    {% if errorUpdate %}
+    <!-- Rajouter la couleur rouge à cette balise p -->
+        <p> {{ errorUpdate }} : Toudou non modifié </p>
+    {%else%}
+        <p> Votre toudou a bien été modifié</p>
+    {% endif %}
+{% endif %}
+</body>
+</html>

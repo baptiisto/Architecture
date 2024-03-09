@@ -133,7 +133,7 @@ def update_todo(
     task: str,
     complete: bool,
     due: datetime | None
-) -> None:
+) -> None | str:
     """
     changer des champs d'un todo doné par l'utilisateur
 
@@ -147,7 +147,7 @@ def update_todo(
         count_rows(id)
     except OperationalError:
         print(STR_OPERATIONAL_ERROR)
-        return None
+        return STR_OPERATIONAL_ERROR
     except ValueError as ve:
         print(str(ve))
         return None
