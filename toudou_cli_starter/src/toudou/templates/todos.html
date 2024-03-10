@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title> Tes Toudous</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %} Affiche Todo{% endblock %}
+
+{% block content %}
   {% if not error %}
     {% if listTodos != [] %}
 <table>
@@ -37,5 +35,4 @@
   {%else%}
    <p> {{ error }} </p>
   {% endif %}
-</body>
-</html>
+{% endblock %}

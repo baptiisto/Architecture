@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello():
-        return render_template("create.html")
+        return render_template("accueil.html")
 @app.route("/create", methods=["GET", "POST"])
 def create():
     requete = request.method

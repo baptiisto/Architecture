@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Delete Todo</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Delete Todo{% endblock %}
+
+{% block content %}
 {% if not error %}
     {% if listTodos != [] %}
     <form action="{{url_for('delete_todos')}}" method="POST">
@@ -26,5 +24,4 @@
 {% else %}
     <p>{{ error }}</p>
 {%endif %}
-</body>
-</html>
+{% endblock %}
