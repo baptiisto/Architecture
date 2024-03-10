@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %} Import Csv{% endblock %}
+{% block content %}
+
+
+<form method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".csv" required>
+    <button type="submit">Importer CSV</button>
+</form>
+{% if requete =="POST" %}
+    {% if error %}
+        <p> Csv invalide</p>
+    {% else %}
+        <p> Le fichier Csv a bien été importé</p>
+    {% endif %}
+{%endif %}
+{% endblock %}

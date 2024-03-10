@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %} Export Csv{% endblock %}
+{% block content %}
+
+    <h1>Export des Todos au format CSV</h1>
+    <form action="{{url_for('download_csv')}}" method="post">
+        <button type="submit">Télécharger CSV</button>
+    </form>
+{%endblock %}

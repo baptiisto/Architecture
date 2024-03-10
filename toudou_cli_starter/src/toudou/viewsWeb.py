@@ -1,9 +1,10 @@
 import uuid
+import io
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request ,Response
 from toudou.models import create_todo, get_all_todos ,delete_todo, get_todo, update_todo
+from toudou.services import import_from_csv ,get_string_csv
 from datetime import datetime
-
 
 app = Flask(__name__)
 
@@ -94,5 +95,29 @@ def update():
             print(errorList)
         return render_template("update.html", errorUpdate=errorUpdate, errorList=errorList, listTodos=listTodos, requete=requete)
 
+
+@app.route("/import_csv", methods=["GET", "POST"])
+def import_csv():
+    try:
+        if request.method == 'POST':
+            csv_file = request.files['file']
+            csv_file_stream = io.TextIOWrapper(csv_file, encoding='utf-8')
+            import_from_csv(csv_file_stream)
+            return  render_template("importCsv.html",requete="POST",error=None)
+        else:
+            return render_template("importCsv.html", requete="GET",error=None)
+    except Exception as e:
+            return render_template("importCsv.html", requete="POST", error=str(e))
+from flask import redirect, url_for
+
+@app.route('/download_csv',methods=["GET", "POST"])
+def download_csv():
+    if request.method == "POST":
+        csv_data = get_string_csv()
+        response = Response(csv_data, content_type='text/csv')
+        response.headers["Content-Disposition"] = "attachment; filename=toudous.csv"
+        return response
+    else:
+        return render_template("downloadCsv.html")
 if __name__ == "__main__":
     app.run(debug=True)
