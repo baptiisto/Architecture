@@ -19,4 +19,4 @@ Commands:
     update
 ```
 
-Course & examples : [https://kathode.neocities.org](https://kathode.neocities.org)
+pour flask c'est  py -m pdm run Flask --app toudous.viewsWeb --debug run. Pour se connecter a la base de données , il faut passer par accueil. Chaque onglet correspond a une commande.

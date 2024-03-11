@@ -7,6 +7,7 @@ dependencies = [
     "click>=8.1.7",
     "sqlalchemy>=2.0.27",
     "Flask>=3.0.2",
+    "python-dotenv>=1.0.1",
 ]
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -20,3 +21,8 @@ toudou = "toudou.views:cli"
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
+[tool.pdm.scripts]
+start = "flask run --debug"
+
+[tool.pdm.scripts.env]
+path = "dev.env"

@@ -5,7 +5,7 @@ import uuid
 
 from dataclasses import dataclass
 from datetime import datetime
-
+from toudou import config
 from sqlalchemy import create_engine, MetaData, Table, Column, String, Uuid, Boolean, DateTime, select, update, delete
 from sqlalchemy.exc import OperationalError
 
@@ -33,7 +33,7 @@ def init_connexion() -> tuple:
             - (Table) todosTable :   table todos, elle a comme colonne (id,task,complete,due)
     """
 
-    engine = create_engine(f"sqlite:///{TODO_FOLDER}/{BASE_DE_DONNEES}", echo=True)
+    engine = create_engine(config["DATABASE_URL"], echo=config["DEBUG"])
     metadata_obj = MetaData()
 
     todosTable = Table(

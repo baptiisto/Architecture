@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1>Modification d'une Toudou</h1>
-<form action="{{url_for('update')}}" method="POST">
+<form action="{{url_for('todo_blueprint.update')}}" method="POST">
     {% if not errorList%}
         {% if listTodos != [] %}
             <label for="toudouId">Choisissez une Toudou :</label><br>
@@ -36,13 +36,13 @@
             <p>Aucune Toudou ne peut étre modfifié crée</p>
         {% endif %}
     {% else %}
-        <p>{{ errorList }}</p>
+         <p class="error">{{ errorList }}</p>
     {%endif %}
 </form>
 {% if requete == "POST" %}
     {% if errorUpdate %}
     <!-- Rajouter la couleur rouge à cette balise p -->
-        <p> {{ errorUpdate }} : Toudou non modifié </p>
+         <p class="error"> {{ errorUpdate }} : Toudou non modifié </p>
     {%else%}
         <p> Votre toudou a bien été modifié</p>
     {% endif %}

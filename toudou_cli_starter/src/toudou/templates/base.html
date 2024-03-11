@@ -96,11 +96,12 @@
 <!-- Navbar -->
 <nav>
     <ul>
-        <li><a href="{{url_for('afficher_todos')}}">Todos</a></li>
-        <li><a href="{{url_for('delete_todos')}}">Effacer Todos</a></li>
-        <li><a href="{{url_for('update')}}">Update</a></li>
-        <li><a href="{{url_for('import_csv')}}">Import</a></li>
-        <li><a href="{{url_for('download_csv')}}">Export</a></li>
+        <li><a href="{{url_for('todo_blueprint.afficher_todos')}}">Todos</a></li>
+        <li><a href="{{url_for('todo_blueprint.create')}}">Créer Todo</a></li>
+        <li><a href="{{url_for('todo_blueprint.delete_todos')}}">Effacer Todos</a></li>
+        <li><a href="{{url_for('todo_blueprint.update')}}">Update</a></li>
+        <li><a href="{{url_for('todo_blueprint.import_csv')}}">Import</a></li>
+        <li><a href="{{url_for('todo_blueprint.download_csv')}}">Export</a></li>
     </ul>
 </nav>
 

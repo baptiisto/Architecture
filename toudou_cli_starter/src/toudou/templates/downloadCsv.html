@@ -3,7 +3,7 @@
 {% block content %}
 
     <h1>Export des Todos au format CSV</h1>
-    <form action="{{url_for('download_csv')}}" method="post">
+    <form action="{{url_for('todo_blueprint.download_csv')}}" method="post">
         <button type="submit">Télécharger CSV</button>
     </form>
 {%endblock %}
