@@ -10,7 +10,6 @@ from sqlalchemy import create_engine, MetaData, Table, Column, String, Uuid, Boo
 from sqlalchemy.exc import OperationalError
 
 TODO_FOLDER = "db"
-BASE_DE_DONNEES ="toudou.db"
 NOM_TABLE = "TODOS"
 STR_OPERATIONAL_ERROR = "Table Todos Inconnu"
 
@@ -32,7 +31,6 @@ def init_connexion() -> tuple:
             - (MetaData)metadata_obj :  représente le schéma de la base de données.
             - (Table) todosTable :   table todos, elle a comme colonne (id,task,complete,due)
     """
-
     engine = create_engine(config["DATABASE_URL"], echo=config["DEBUG"])
     metadata_obj = MetaData()
 

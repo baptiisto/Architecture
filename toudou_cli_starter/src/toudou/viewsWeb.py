@@ -9,4 +9,6 @@ def create_app():
     # Register the blueprint
     app.register_blueprint(todo_blueprint)
 
+
+
     return app

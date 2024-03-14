@@ -2,18 +2,18 @@ import io
 import uuid
 from datetime import datetime
 
-from flask import Blueprint, render_template, request, Response
+from flask import Blueprint, render_template, request, Response, abort, flash, redirect, url_for
 
 from toudou.models import create_todo, get_all_todos, delete_todo, get_todo, update_todo, init_db
 from toudou.services import import_from_csv, get_string_csv
 
 # Define the blueprint
 todo_blueprint = Blueprint("todo_blueprint", __name__, url_prefix="/")
-
 # Define routes within the blueprint
 @todo_blueprint.route("/")
 def accueil():
     init_db()
+    abort(500)
     return render_template("accueil.html")
 
 @todo_blueprint.route("/create", methods=["GET", "POST"])
@@ -109,3 +109,8 @@ def download_csv():
         return response
     else:
         return render_template("downloadCsv.html")
+
+@todo_blueprint.errorhandler(500)
+def handle_internal_error(error):
+    flash("Erreur interne du serveur", "error")
+    return render_template("accueil.html")
