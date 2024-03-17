@@ -29,7 +29,7 @@ def validerDate(form,champ):
 
 
 class FormCreate(FlaskForm):
-    nameTodo = StringField("Nom du Todo", validators=[DataRequired(),validerDate])
+    nameTodo = StringField("Nom du Todo", validators=[DataRequired()])
     etat =RadioField("Etat",choices=[("True","Terminé"),("False","En Cours")],default='False')
     date = NullableDateField('Date de la Todo', validators=[validerDate],format=FORMAT)
     valider = SubmitField('Valider')
