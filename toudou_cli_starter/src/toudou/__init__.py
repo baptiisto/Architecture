@@ -1,7 +1,7 @@
 import os
 import logging
 import sys
-
+FORMAT = '%Y-%m-%d'
 config = dict(
 DATABASE_URL=os.getenv("TOUDOU_DATABASE_URL", ""),
 DEBUG=os.getenv("TOUDOU_DEBUG", "False") == "True",

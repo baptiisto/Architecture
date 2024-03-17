@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import Blueprint, render_template, request, Response, abort, flash, redirect, url_for
 from toudou.models import create_todo, get_all_todos, delete_todo, get_todo, update_todo, init_db
 from toudou.services import import_from_csv, get_string_csv
-from toudou.form import MyForm
+from toudou.form import FormCreate
 todo_blueprint = Blueprint("todo_blueprint", __name__, url_prefix="/")
 @todo_blueprint.route("/")
 def accueil():
@@ -15,7 +15,7 @@ def accueil():
 
 @todo_blueprint.route("/create", methods=["GET", "POST"])
 def create():
-    form = MyForm()
+    form = FormCreate()
     if request.method == "GET":
         return render_template("create.html", error=None, requete="GET",form=form)
     elif form.validate_on_submit():
