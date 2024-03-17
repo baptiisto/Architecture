@@ -1,7 +1,8 @@
+import uuid
 from flask_wtf import FlaskForm
 from wtforms import StringField ,SubmitField,RadioField
 from wtforms.validators import DataRequired , ValidationError
-from wtforms.fields import DateField
+from wtforms.fields import DateField ,SelectField
 from datetime import date , datetime
 from toudou import FORMAT
 
@@ -21,11 +22,9 @@ class NullableDateField(DateField):
                 raise ValueError(self.gettext('Not a valid date value'))
 
 def validerDate(form,champ):
-    print(form.data['date'])
     if form.data['date'] is not None:
         if form.data['date'] <= date.today():
             raise ValidationError("La date d'achèvement doit être supérieure à la date d'aujourd'hui.")
-
 
 
 class FormCreate(FlaskForm):
@@ -34,3 +33,6 @@ class FormCreate(FlaskForm):
     date = NullableDateField('Date de la Todo', validators=[validerDate],format=FORMAT)
     valider = SubmitField('Valider')
 
+class FormDelete(FlaskForm):
+    select_field = SelectField('Choisir une Todo à enlever', validators=[DataRequired()], coerce=uuid.UUID)
+    valider = SubmitField('Valider')

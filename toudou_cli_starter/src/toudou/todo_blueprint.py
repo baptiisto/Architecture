@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import Blueprint, render_template, request, Response, abort, flash, redirect, url_for
 from toudou.models import create_todo, get_all_todos, delete_todo, get_todo, update_todo, init_db
 from toudou.services import import_from_csv, get_string_csv
-from toudou.form import FormCreate
+from toudou.form import FormCreate , FormDelete
 todo_blueprint = Blueprint("todo_blueprint", __name__, url_prefix="/")
 @todo_blueprint.route("/")
 def accueil():
@@ -25,7 +25,7 @@ def create():
         date = form.date.data
         error = create_todo(tache, complete, date)
         return render_template("create.html", error=error, requete="POST",form=form)
-    return render_template("create.html", error="ntm", requete="POST",form=form)
+    return render_template("create.html", error="erreur", requete="POST",form=form)
 
 @todo_blueprint.route("/todos", methods=["GET"])
 def afficher_todos():
@@ -38,18 +38,26 @@ def afficher_todos():
 
 @todo_blueprint.route("/delete", methods=["GET", "POST"])
 def delete_todos():
+    form = FormDelete()
     listTodos = get_all_todos()
     if isinstance(listTodos, str):
         error = listTodos
-        return render_template("delete.html", error=error, listTodos=[], requete="GET")
+        return render_template("delete.html", error=error, requete="GET")
     requete = request.method
+    options = [(str(todo.id), todo.task) for todo in listTodos]
+    form.select_field.choices = options
     if requete == "POST":
-        donnees = request.form
-        id = uuid.UUID(donnees["toudouId"])
-        delete_todo(id)
-        listTodos = get_all_todos()
-        return render_template("delete.html", error=None, listTodos=listTodos, requete="POST")
-    return render_template("delete.html", error=None, listTodos=listTodos, requete="GET")
+        if form.validate_on_submit():
+            id = form.select_field.data
+            delete_todo(id)
+            listTodos = get_all_todos()
+            options = [(str(todo.id), todo.task) for todo in listTodos]
+            form.select_field.choices = options
+            return render_template("delete.html", error=None, requete="POST",form=form)
+        else:
+            return render_template("delete.html", error="formulaire invalide", requete="POST",form=form)
+    else:
+        return render_template("delete.html", error=None, requete="GET",form=form)
 
 @todo_blueprint.route("/update", methods=["GET", "POST"])
 def update():
