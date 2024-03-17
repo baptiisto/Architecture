@@ -1,15 +1,12 @@
 import io
+import logging
 import uuid
 from datetime import datetime
-
 from flask import Blueprint, render_template, request, Response, abort, flash, redirect, url_for
-
 from toudou.models import create_todo, get_all_todos, delete_todo, get_todo, update_todo, init_db
 from toudou.services import import_from_csv, get_string_csv
-
-# Define the blueprint
+from toudou.form import MyForm
 todo_blueprint = Blueprint("todo_blueprint", __name__, url_prefix="/")
-# Define routes within the blueprint
 @todo_blueprint.route("/")
 def accueil():
     init_db()
@@ -18,20 +15,17 @@ def accueil():
 
 @todo_blueprint.route("/create", methods=["GET", "POST"])
 def create():
+    form = MyForm()
     if request.method == "GET":
-        return render_template("create.html", error=None, requete="GET")
-    else:
-        donnees = request.form
-        tache = donnees['tache']
-        complete = donnees['complete']
+        return render_template("create.html", error=None, requete="GET",form=form)
+    elif form.validate_on_submit():
+        tache = form.nameTodo.data
+        complete = form.etat.data
         complete = complete.lower() == "true"
-        date = donnees['date']
-        if date:
-            date = datetime.strptime(date, "%Y-%m-%d")
-        else:
-            date = None
+        date = form.date.data
         error = create_todo(tache, complete, date)
-        return render_template("create.html", error=error, requete="POST")
+        return render_template("create.html", error=error, requete="POST",form=form)
+    return render_template("create.html", error="ntm", requete="POST",form=form)
 
 @todo_blueprint.route("/todos", methods=["GET"])
 def afficher_todos():
@@ -113,4 +107,5 @@ def download_csv():
 @todo_blueprint.errorhandler(500)
 def handle_internal_error(error):
     flash("Erreur interne du serveur", "error")
+    logging.exception(error)
     return render_template("accueil.html")

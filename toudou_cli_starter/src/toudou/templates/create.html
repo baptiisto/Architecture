@@ -5,24 +5,18 @@
 {% block content %}
 <h1>Creation d'une Toudou</h1>
 <form action="{{url_for('todo_blueprint.create')}}" method="POST">
-  <label for="tache"> Tâche de la Todo:</label>
-  <input type="text" id="tache" name="tache"  required>
+    {{ form.csrf_token }}
+    {{ form.nameTodo.label }}
+    {{ form.nameTodo(placeholder="Tâche de la Todo") }}
   <br>
-   <p>Achievement de la tache
-     <br>
-     <br>
-    <label>True</label>
-    <input type="radio"name="complete" value="True"id="True">
+    {{ form.etat.label }}
+    {{ form.etat  }}
     <br>
-     <br>
-    <label>False</label>
-    <input type="radio"name="complete" value="False"id="False" checked>
-   </p>
-   <label for="date"> Date de la Todo:</label>
-  <input type="date" id="date" name="date">
+    {{ form.date.label }}
+    {{ form.date(type="date") }}
   <br>
   <br>
-  <input type="submit" value="Envoyer le formulaire">
+{{ form.valider()}}
 </form>
 {% if requete == "POST" %}
     {% if error %}
@@ -31,5 +25,16 @@
     {%else%}
         <p> Votre toudou a bien été crée</p>
     {% endif %}
+    {% if form.errors %}
+    <h4>Erreur(s) de validation :</h4>
+    <ul>
+      {% for field, errors in form.errors.items() %}
+        {% for error in errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
 {% endif %}
 {% endblock %}
