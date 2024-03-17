@@ -30,9 +30,15 @@ def validerDate(form,champ):
 class FormCreate(FlaskForm):
     nameTodo = StringField("Nom du Todo", validators=[DataRequired()])
     etat =RadioField("Etat",choices=[("True","Terminé"),("False","En Cours")],default='False')
-    date = NullableDateField('Date de la Todo', validators=[validerDate],format=FORMAT)
+    date = NullableDateField('Date de la Todo', validators=[DataRequired(),validerDate],format=FORMAT)
     valider = SubmitField('Valider')
 
 class FormDelete(FlaskForm):
     select_field = SelectField('Choisir une Todo à enlever', validators=[DataRequired()], coerce=uuid.UUID)
+    valider = SubmitField('Valider')
+
+class FormUpdate(FlaskForm):
+    select_field = SelectField('Choisir une Todo à enlever', validators=[DataRequired()], coerce=uuid.UUID)
+    etat =RadioField("Etat",choices=[("True","Terminé"),("False","En Cours")],default='False')
+    date = NullableDateField('Date de la Todo', validators=[DataRequired(),validerDate],format=FORMAT)
     valider = SubmitField('Valider')
