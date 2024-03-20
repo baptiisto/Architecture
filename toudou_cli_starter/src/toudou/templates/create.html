@@ -19,22 +19,6 @@
 {{ form.valider()}}
 </form>
 {% if requete == "POST" %}
-    {% if error %}
-    <!-- Rajouter la couleur rouge à cette balise p -->
-        <p class="error"> {{ error }} </p>
-    {%else%}
-        <p> Votre toudou a bien été crée</p>
+    <p> Votre toudou a bien été crée</p>
     {% endif %}
-    {% if form.errors %}
-    <h4>Erreur(s) de validation :</h4>
-    <ul>
-      {% for field, errors in form.errors.items() %}
-        {% for error in errors %}
-          <li>{{ error }}</li>
-        {% endfor %}
-      {% endfor %}
-    </ul>
-  </div>
-{% endif %}
-{% endif %}
 {% endblock %}

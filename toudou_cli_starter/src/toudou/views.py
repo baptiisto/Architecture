@@ -2,7 +2,7 @@ import click
 import uuid
 
 from datetime import datetime
-
+from sqlalchemy.exc import OperationalError
 import toudou.models as models
 import toudou.services as services
 
@@ -18,28 +18,43 @@ def init_db():
 @click.option("-t", "--task", prompt="Your task", help="The task to remember.")
 @click.option("-d", "--due", type=click.DateTime(formats=["%Y-%m-%d"]), default=None, help="Due date of the task.")
 def create(task: str, due: datetime):
-    models.create_todo(task, due=due)
+    try:
+        models.create_todo(task, due=due)
+    except OperationalError as e:
+        print(str(e))
+
 
 
 @cli.command()
 @click.option("--id", required=True, type=click.UUID, help="Todo's id.")
 def get(id: uuid.UUID):
-    click.echo(models.get_todo(id))
+    try:
+        click.echo(models.get_todo(id))
+    except OperationalError as e:
+        print(str(e))
+    except ValueError as ve:
+        print(str(ve))
 
 
 @cli.command()
 @click.option("--as-csv", is_flag=True, help="Ouput a CSV string.")
 def get_all(as_csv: bool):
-    if as_csv:
-        click.echo(services.export_to_csv().getvalue())
-    else:
-        click.echo(models.get_all_todos())
+    try:
+        if as_csv:
+            click.echo(services.export_to_csv().getvalue())
+        else:
+            click.echo(models.get_all_todos())
+    except OperationalError as e:
+        print(str(e))
 
 
 @cli.command()
 @click.argument("csv_file", type=click.File("r"))
 def import_csv(csv_file):
-    services.import_from_csv(csv_file)
+    try:
+        services.import_from_csv(csv_file)
+    except Exception as e:
+        print(str(e))
 
 
 @cli.command()
@@ -48,10 +63,20 @@ def import_csv(csv_file):
 @click.option("-t", "--task", prompt="Your task", help="The task to remember.")
 @click.option("-d", "--due",type=click.DateTime(formats=["%Y-%m-%d"]), default=None, help="Due date of the task.")
 def update(id: uuid.UUID, complete: bool, task: str, due: datetime):
-    models.update_todo(id, task, complete, due)
+    try:
+        models.update_todo(id, task, complete, due)
+    except OperationalError as e:
+        print(str(e))
+    except ValueError as ve:
+        print(str(ve))
 
 
 @cli.command()
 @click.option("--id", required=True, type=click.UUID, help="Todo's id.")
 def delete(id: uuid.UUID):
-    models.delete_todo(id)
+    try:
+        models.delete_todo(id)
+    except OperationalError as e:
+        print(str(e))
+    except ValueError as ve:
+        print(str(ve))

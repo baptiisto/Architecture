@@ -75,8 +75,7 @@ def create_todo(
         with engine.begin() as conn:
             result = conn.execute(stmt)
     except OperationalError:
-        print(STR_OPERATIONAL_ERROR)
-        return STR_OPERATIONAL_ERROR
+        raise (OperationalError(STR_OPERATIONAL_ERROR,params=None, orig=None))
 
 
 def get_todo(id: uuid.UUID) -> Todo | str:
@@ -91,9 +90,9 @@ def get_todo(id: uuid.UUID) -> Todo | str:
     try:
         count_rows(id)
     except OperationalError:
-        return STR_OPERATIONAL_ERROR
+        raise (OperationalError(STR_OPERATIONAL_ERROR, params=None, orig=None))
     except ValueError as ve:
-        return str(ve)
+        raise ValueError("Id inconnu")
 
     stmt = select(todosTable).where(todosTable.c.id == id)
     with engine.connect() as conn:
@@ -124,7 +123,7 @@ def get_all_todos() -> list[Todo]| str:
                 tab_todos.append(todo)
         return tab_todos
     except OperationalError:
-        return STR_OPERATIONAL_ERROR
+        raise (OperationalError(STR_OPERATIONAL_ERROR,params=None, orig=None))
 
 def update_todo(
     id: uuid.UUID,
@@ -144,11 +143,9 @@ def update_todo(
     try:
         count_rows(id)
     except OperationalError:
-        print(STR_OPERATIONAL_ERROR)
-        return STR_OPERATIONAL_ERROR
+        raise (OperationalError(STR_OPERATIONAL_ERROR, params=None, orig=None))
     except ValueError as ve:
-        print(str(ve))
-        return None
+        raise ValueError("Id inconnu")
 
     engine, metadata_obj, todosTable = init_connexion()
     if due:
@@ -168,11 +165,9 @@ def delete_todo(id: uuid.UUID) -> None:
     try:
         count_rows(id)
     except OperationalError:
-        print(STR_OPERATIONAL_ERROR)
-        return None
+        raise (OperationalError(STR_OPERATIONAL_ERROR, params=None, orig=None))
     except ValueError as ve:
-        print(str(ve))
-        return None
+        raise ValueError("Id inconnu")
 
     engine, metadata_obj, todosTable = init_connexion()
     smt = delete(todosTable).where(todosTable.c.id == id)
@@ -217,4 +212,4 @@ def count_rows(id:uuid.UUID) -> int:
                 raise ValueError("ID Inconnu")
             return len(rows)
     except OperationalError as e:
-        raise e
+        raise (OperationalError(STR_OPERATIONAL_ERROR))

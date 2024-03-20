@@ -20,13 +20,12 @@ def export_to_csv() -> io.StringIO:
     return output
 
 
-def import_from_csv(csv_file: io.StringIO) -> None:
-    try:
+def import_from_csv(csv_file:io.TextIOWrapper) -> None:
+        csv_file.seek(0)
         csv_reader = csv.DictReader(
             csv_file,
             fieldnames=["task", "complete", "due"]
         )
-        next(csv_reader)
         for row in csv_reader:
             print(row)
             create_todo(
@@ -34,9 +33,6 @@ def import_from_csv(csv_file: io.StringIO) -> None:
                 due=datetime.fromisoformat(row["due"]) if row["due"] else None,
                 complete=row["complete"] == "True"
             )
-    except csv.Error as e:
-        raise Exception( str(e))
-
 def get_string_csv():
     csv_data = export_to_csv()
     csv_data.seek(0)

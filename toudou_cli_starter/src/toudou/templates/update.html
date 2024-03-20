@@ -6,38 +6,26 @@
 <h1>Modification d'une Toudou</h1>
 <form action="{{url_for('todo_blueprint.update')}}" method="POST">
     {% if not errorList%}
-        {% if listTodos != [] %}
-            <label for="toudouId">Choisissez une Toudou :</label><br>
-            <select id="toudouId" name="toudouId">
-                {% for todo in listTodos %}
-                <option value={{todo.id}}>{{todo.task}}</option>
-                {% endfor %}
-            </select>
-        <br>
-        <label for="tache"> Tâche de la Todo:</label>
-        <input type="text" id="tache" name="tache" >
-        <br>
-        <p>Achievement de la tache
-                <br>
-                <br>
-                <label>True</label>
-                <input type="radio"name="complete" value="True"id="True">
-                <br>
-                <br>
-                <label>False</label>
-                <input type="radio"name="complete" value="False"id="False" checked>
-        </p>
-        <label for="date"> Date de la Todo:</label>
-        <input type="date" id="date" name="date">
+        {{ form.csrf_token }}
+        {{ form.select_field.label }}
+        {{ form.select_field }}
         <br>
         <br>
-        <input type="submit" value="Envoyer le formulaire">
-        {% else %}
-            <p>Aucune Toudou ne peut étre modfifié crée</p>
-        {% endif %}
+        {{ form.nameTodo.label }}
+        {{ form.nameTodo(placeholder="Tâche de la Todo") }}
+        <br>
+        <br>
+        {{ form.etat.label }}
+        {{ form.etat  }}
+        <br>
+        <br>
+        {{ form.date.label }}
+        {{ form.date(type="date") }}
+      <br>
     {% else %}
          <p class="error">{{ errorList }}</p>
     {%endif %}
+    {{ form.valider()}}
 </form>
 {% if requete == "POST" %}
     {% if errorUpdate %}

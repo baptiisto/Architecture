@@ -1,48 +1,42 @@
 import io
 import logging
-import uuid
-from datetime import datetime
+from sqlalchemy.exc import OperationalError
+
+from wtforms import ValidationError
 from flask import Blueprint, render_template, request, Response, abort, flash, redirect, url_for
 from toudou.models import create_todo, get_all_todos, delete_todo, get_todo, update_todo, init_db
 from toudou.services import import_from_csv, get_string_csv
-from toudou.form import FormCreate , FormDelete
+from toudou.form import FormCreate , FormDelete , FormUpdate,FormImport
 todo_blueprint = Blueprint("todo_blueprint", __name__, url_prefix="/")
 @todo_blueprint.route("/")
 def accueil():
     init_db()
-    abort(500)
     return render_template("accueil.html")
 
 @todo_blueprint.route("/create", methods=["GET", "POST"])
 def create():
     form = FormCreate()
     if request.method == "GET":
-        return render_template("create.html", error=None, requete="GET",form=form)
+        return render_template("create.html", requete="GET",form=form)
     elif form.validate_on_submit():
         tache = form.nameTodo.data
         complete = form.etat.data
         complete = complete.lower() == "true"
         date = form.date.data
-        error = create_todo(tache, complete, date)
-        return render_template("create.html", error=error, requete="POST",form=form)
-    return render_template("create.html", error="erreur", requete="POST",form=form)
+        create_todo(tache, complete, date)
+        return render_template("create.html", requete="POST",form=form)
+    else:
+        raise ValidationError("Formulaire invalide")
 
 @todo_blueprint.route("/todos", methods=["GET"])
 def afficher_todos():
     listTodos = get_all_todos()
-    if isinstance(listTodos, str):
-        error = listTodos
-        return render_template("todos.html", error=error, listTodos=[])
-    else:
-        return render_template("todos.html", error=None, listTodos=listTodos)
+    return render_template("todos.html", listTodos=listTodos)
 
 @todo_blueprint.route("/delete", methods=["GET", "POST"])
 def delete_todos():
     form = FormDelete()
     listTodos = get_all_todos()
-    if isinstance(listTodos, str):
-        error = listTodos
-        return render_template("delete.html", error=error, requete="GET")
     requete = request.method
     options = [(str(todo.id), todo.task) for todo in listTodos]
     form.select_field.choices = options
@@ -53,54 +47,60 @@ def delete_todos():
             listTodos = get_all_todos()
             options = [(str(todo.id), todo.task) for todo in listTodos]
             form.select_field.choices = options
-            return render_template("delete.html", error=None, requete="POST",form=form)
+            return render_template("delete.html", requete="POST",form=form)
         else:
-            return render_template("delete.html", error="formulaire invalide", requete="POST",form=form)
+            raise ValidationError("Formulaire invalide")
     else:
-        return render_template("delete.html", error=None, requete="GET",form=form)
+        return render_template("delete.html", requete="GET",form=form)
 
 @todo_blueprint.route("/update", methods=["GET", "POST"])
 def update():
-    if request.method == "GET":
-        listTodos = get_all_todos()
-        errorList = None
-        if isinstance(listTodos, str):
-            errorList = listTodos
-        return render_template("update.html", errorUpdate=None, errorList=errorList, listTodos=listTodos, requete="GET")
-    else:
-        donnees = request.form
-        id = uuid.UUID(donnees["toudouId"])
-        tache = donnees['tache']
-        complete = donnees['complete']
-        complete = complete.lower() == "true"
-        date = donnees['date']
-        todo = get_todo(id)
-        if date:
-            date = datetime.strptime(date, "%Y-%m-%d")
-        else:
-            date = todo.due
-        if not tache:
-            tache = todo.task
-        errorUpdate = update_todo(id, tache, complete, date)
-        listTodos = get_all_todos()
-        errorList = None
-        if isinstance(listTodos, str):
-            errorList = listTodos
-            listTodos = []
-        return render_template("update.html", errorUpdate=errorUpdate, errorList=errorList, listTodos=listTodos, requete="POST")
+    form = FormUpdate()
 
+    # Récupérer les todos pour construire les options du formulaire
+    listTodos = get_all_todos()
+    options = [(str(todo.id), todo.task) for todo in listTodos]
+    form.select_field.choices = options
+    if request.method == "POST":
+        if form.validate_on_submit():
+            id = form.select_field.data
+            tache = form.nameTodo.data
+            complete = form.etat.data.lower() == "true"
+            date = form.date.data
+
+            # Récupérer la tâche à mettre à jour
+            todo = get_todo(id)
+
+            # Utiliser les valeurs par défaut si les champs ne sont pas renseignés dans le formulaire
+            if not date:
+                date = todo.due
+            if not tache:
+                tache = todo.task
+
+            update_todo(id, tache, complete, date)
+
+            listTodos = get_all_todos()
+            options = [(str(todo.id), todo.task) for todo in listTodos]
+            form.select_field.choices = options
+
+            return render_template("update.html", form=form, requete="POST")
+        else:
+            raise ValidationError("Formulaire invalide")
+    else:
+        return render_template("update.html", form=form, requete="GET")
 @todo_blueprint.route("/import_csv", methods=["GET", "POST"])
 def import_csv():
-    try:
-        if request.method == 'POST':
-            csv_file = request.files['file']
-            csv_file_stream = io.TextIOWrapper(csv_file, encoding='utf-8')
-            import_from_csv(csv_file_stream)
-            return render_template("importCsv.html", requete="POST", error=None)
+    form = FormImport()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            csv_file = form.csv_file.data
+            import_from_csv(csv_file.stream)
+            return render_template("importCsv.html", form=form, requete="POST")
         else:
-            return render_template("importCsv.html", requete="GET", error=None)
-    except Exception as e:
-        return render_template("importCsv.html", requete="POST", error=str(e))
+            raise ValidationError("Formulaire invalide")
+
+    return render_template("importCsv.html", form=form, requete="GET")
+
 
 @todo_blueprint.route('/download_csv', methods=["GET", "POST"])
 def download_csv():
@@ -117,3 +117,16 @@ def handle_internal_error(error):
     flash("Erreur interne du serveur", "error")
     logging.exception(error)
     return render_template("accueil.html")
+
+@todo_blueprint.errorhandler(ValidationError)
+def handle_validation_error(e):
+    flash("Formulaire invalide", 'error')
+    return redirect(request.referrer)
+@todo_blueprint.errorhandler(OperationalError)
+def handle_operational_error(e):
+    flash(str(e), 'error')
+    return redirect(url_for('todo_blueprint.accueil'))
+@todo_blueprint.errorhandler(ValueError)
+def handle_operational_error(e):
+    flash(str(e), 'error')
+    return redirect(url_for('todo_blueprint.accueil'))
