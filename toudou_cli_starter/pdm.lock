@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:088fbd5579913fa832d50d204e15cdfc324236823efb8c21e49f4b591552828d"
+content_hash = "sha256:d253758a53225b2edb3225ff2896cc4750e3e942e39489bc46be25710bb3ca57"
 
 [[package]]
 name = "blinker"
@@ -60,6 +60,19 @@ dependencies = [
 files = [
     {file = "flask-3.0.2-py3-none-any.whl", hash = "sha256:3232e0e9c850d781933cf0207523d1ece087eb8d87b23777ae38456e2fbe7c6e"},
     {file = "flask-3.0.2.tar.gz", hash = "sha256:822c03f4b799204250a7ee84b1eddc40665395333973dfb9deebfe425fefcb7d"},
+]
+
+[[package]]
+name = "flask-httpauth"
+version = "4.8.0"
+summary = "HTTP authentication for Flask routes"
+groups = ["default"]
+dependencies = [
+    "flask",
+]
+files = [
+    {file = "Flask-HTTPAuth-4.8.0.tar.gz", hash = "sha256:66568a05bc73942c65f1e2201ae746295816dc009edd84b482c44c758d75097a"},
+    {file = "Flask_HTTPAuth-4.8.0-py3-none-any.whl", hash = "sha256:a58fedd09989b9975448eef04806b096a3964a7feeebc0a78831ff55685b62b0"},
 ]
 
 [[package]]

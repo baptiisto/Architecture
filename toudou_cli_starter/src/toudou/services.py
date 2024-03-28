@@ -33,9 +33,3 @@ def import_from_csv(csv_file:io.TextIOWrapper) -> None:
                 due=datetime.fromisoformat(row["due"]) if row["due"] else None,
                 complete=row["complete"] == "True"
             )
-def get_string_csv():
-    csv_data = export_to_csv()
-    csv_data.seek(0)
-    csv_data = csv_data.read()
-
-    return csv_data
