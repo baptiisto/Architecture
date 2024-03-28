@@ -19,15 +19,14 @@ auth = HTTPBasicAuth()
 
 users = {
     "user": {
-        "password": generate_password_hash("user"),
+        "password": generate_password_hash("user", salt_length=16),
         "role": "user"
     },
     "admin": {
-        "password": generate_password_hash("admin"),
+        "password": generate_password_hash("admin", salt_length=16),
         "role": "admin"
     }
 }
-
 @auth.verify_password
 def verify_password(username, password):
     if username in users and \

@@ -12,7 +12,8 @@ from sqlalchemy.exc import OperationalError
 TODO_FOLDER = "db"
 NOM_TABLE = "TODOS"
 STR_OPERATIONAL_ERROR = "Table Todos Inconnu"
-
+print("config")
+print((config["DATABASE_URL"]))
 engine = create_engine(config["DATABASE_URL"], echo=config["DEBUG"])
 metadata_obj = MetaData()
 

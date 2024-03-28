@@ -3,10 +3,10 @@ import logging
 from sqlalchemy.exc import OperationalError
 
 from wtforms import ValidationError
-from flask import Blueprint, render_template, request, Response, abort, flash, redirect, url_for, send_file
+from flask import Blueprint, render_template, request, flash, redirect, url_for, send_file
 from toudou.models import create_todo, get_all_todos, delete_todo, get_todo, update_todo, init_db
 from toudou.services import import_from_csv, export_to_csv
-from toudou.form import FormCreate , FormDelete , FormUpdate,FormImport
+from toudou.vue.form import FormCreate , FormDelete , FormUpdate,FormImport
 from toudou.vue.viewsWeb import auth
 todo_blueprint = Blueprint("todo_blueprint", __name__, url_prefix="/")
 @todo_blueprint.route("/")
@@ -29,7 +29,7 @@ def create():
         create_todo(tache, complete, date)
         return render_template("create.html", requete="POST", form=form)
     else:
-        abort(ValidationError("Formulaire invalide"))
+        raise(ValidationError("Formulaire invalide"))
 
 @todo_blueprint.route("/todos", methods=["GET"])
 @auth.login_required(role=["user","admin"])
@@ -54,7 +54,7 @@ def delete_todos():
             form.select_field.choices = options
             return render_template("delete.html", requete="POST", form=form)
         else:
-            abort(ValidationError("Formulaire invalide"))
+            raise(ValidationError("Formulaire invalide"))
     else:
         return render_template("delete.html", requete="GET", form=form)
 
@@ -91,7 +91,7 @@ def update():
 
             return render_template("update.html", form=form, requete="POST")
         else:
-            abort(ValidationError("Formulaire invalide"))
+            raise(ValidationError("Formulaire invalide"))
     else:
         return render_template("update.html", form=form, requete="GET")
 @todo_blueprint.route("/import_csv", methods=["GET", "POST"])
@@ -104,7 +104,7 @@ def import_csv():
             import_from_csv(csv_file.stream)
             return render_template("importCsv.html", form=form, requete="POST")
         else:
-            abort(ValidationError("Formulaire invalide"))
+            raise (ValidationError("Formulaire invalide"))
 
     return render_template("importCsv.html", form=form, requete="GET")
 
@@ -129,12 +129,15 @@ def handle_internal_error(error):
 @todo_blueprint.errorhandler(ValidationError)
 def handle_validation_error(e):
     flash("Formulaire invalide", 'error')
+    logging.exception(e)
     return redirect(request.referrer)
 @todo_blueprint.errorhandler(OperationalError)
 def handle_operational_error(e):
     flash(str(e), 'error')
+    logging.exception(e)
     return redirect(url_for('todo_blueprint.accueil'))
 @todo_blueprint.errorhandler(ValueError)
 def handle_operational_error(e):
     flash(str(e), 'error')
+    logging.exception(e)
     return redirect(url_for('todo_blueprint.accueil'))
